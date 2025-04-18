@@ -1,7 +1,7 @@
 import {encode} from 'html-entities';
 import * as _ from 'lodash';
 
-import {DEFAULT_UPDATE_REMEDIATION_NIST_TAGS} from './utils/global';
+import {DEFAULT_UPDATE_REMEDIATION_NIST_TAGS} from '../utils/global';
 
 const desc = () => ' ';
 
@@ -34,11 +34,14 @@ function meta(): Record<string, string> {
 
 
 function findingNistTag(finding: unknown): string[] {
-  const relatedRequirements = _.get(finding, 'Resources[0].RelatedRequirements');
-  const nistRelatedControls = relatedRequirements && Array.isArray(relatedRequirements)
-    ? relatedRequirements.find((x: string) => x.startsWith("NIST-800-53-Revision-5"))
-    : null;
-    
+  const relatedRequirements = _.get(finding, 'Resources[0].RelatedRequirements') as string[] | undefined;
+  
+  if (!relatedRequirements || !Array.isArray(relatedRequirements)) {
+    return DEFAULT_UPDATE_REMEDIATION_NIST_TAGS;
+  }
+  
+  const nistRelatedControls = relatedRequirements.find((x: string) => x.startsWith("NIST-800-53-Revision-5")) || null;
+  
   if (typeof nistRelatedControls !== 'string') {
     return DEFAULT_UPDATE_REMEDIATION_NIST_TAGS;
   } else {
