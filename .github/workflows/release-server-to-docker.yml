@@ -37,11 +37,11 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64
-          tags: mitre/heimdall2:release-latest,mitre/heimdall2:${{ steps.format-tag.outputs.replaced }}
+          tags: wandmagic/heimdall3:release-latest,wandmagic/heimdall3:${{ steps.format-tag.outputs.replaced }}
       - name: Get Docker SHA
         shell: bash
         id: get-docker-sha
-        run: echo "DOCKER_SHA=$(docker pull mitre/heimdall2:${{ steps.format-tag.outputs.replaced }} > /dev/null 2>&1 && docker inspect --format='{{index .RepoDigests 0}}' mitre/heimdall2:${{ steps.format-tag.outputs.replaced }} | cut -d '@' -f 2)" >> $GITHUB_ENV
+        run: echo "DOCKER_SHA=$(docker pull wandmagic/heimdall3:${{ steps.format-tag.outputs.replaced }} > /dev/null 2>&1 && docker inspect --format='{{index .RepoDigests 0}}' wandmagic/heimdall3:${{ steps.format-tag.outputs.replaced }} | cut -d '@' -f 2)" >> $GITHUB_ENV
       - name: Sophos Factory pipeline
         uses: sophos/factory-run-pipeline@v2
         with:
@@ -52,5 +52,5 @@ jobs:
             {
               "gitlabHost": "repo1.dso.mil",
               "heimdallVersion": "${{ steps.format-tag.outputs.replaced }}",
-              "heimdallDockerURL": "docker://docker.io/mitre/heimdall2@${{ env.DOCKER_SHA }}"
+              "heimdallDockerURL": "docker://docker.io/wandmagic/heimdall3@${{ env.DOCKER_SHA }}"
             }
