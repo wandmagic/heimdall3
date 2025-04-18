@@ -1,6 +1,8 @@
 import {encode} from 'html-entities';
 import * as _ from 'lodash';
 
+import {DEFAULT_UPDATE_REMEDIATION_NIST_TAGS} from './utils/global';
+
 const desc = () => ' ';
 
 function subfindingsCodeDesc(finding: unknown) {
@@ -32,11 +34,19 @@ function meta(): Record<string, string> {
 
 
 function findingNistTag(finding: unknown): string[] {
-  const nistRelatedControls = _.get(finding, 'Resources[0].RelatedRequirements').find(x=>x.startsWith("NIST-800-53-Revision-5"))||null;
+  const relatedRequirements = _.get(finding, 'Resources[0].RelatedRequirements');
+  const nistRelatedControls = relatedRequirements && Array.isArray(relatedRequirements)
+    ? relatedRequirements.find((x: string) => x.startsWith("NIST-800-53-Revision-5"))
+    : null;
+    
   if (typeof nistRelatedControls !== 'string') {
     return DEFAULT_UPDATE_REMEDIATION_NIST_TAGS;
   } else {
-    return nistRelatedControls.replaceAll("NIST-800-53-Revision-5 ","").replaceAll("_","-").toUpperCase().split(" ")
+    return nistRelatedControls
+      .replace(/NIST-800-53-Revision-5 /g, "")
+      .replace(/_/g, "-")
+      .toUpperCase()
+      .split(" ");
   }
 }
 
@@ -48,6 +58,7 @@ export function getProwler(): Record<string, (...inputs: any) => any> {
     productName,
     desc,
     filename,
-    meta
+    meta,
+    findingNistTag
   };
 }
