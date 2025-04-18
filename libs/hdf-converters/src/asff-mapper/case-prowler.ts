@@ -30,6 +30,16 @@ function meta(): Record<string, string> {
   return {name: 'Prowler', title: 'Prowler Findings'};
 }
 
+
+function findingNistTag(finding: unknown): string[] {
+  const nistRelatedControls = _.get(finding, 'Resources[0].RelatedRequirements').find(x=>x.startsWith("NIST-800-53-Revision-5"))||null;
+  if (typeof nistRelatedControls !== 'string') {
+    return DEFAULT_UPDATE_REMEDIATION_NIST_TAGS;
+  } else {
+    return nistRelatedControls.replaceAll("NIST-800-53-Revision-5 ","").replaceAll("_","-").toUpperCase().split(" ")
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function getProwler(): Record<string, (...inputs: any) => any> {
   return {
